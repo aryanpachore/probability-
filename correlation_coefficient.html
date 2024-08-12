@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pearson Correlation Coefficient Calculator</title>
+    <style>
+        h1{text-align: center;}
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #1e1e1e;
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+        }
+
+        .input-section {
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            border: 1px solid #333;
+            background-color: #333;
+            color: #fff;
+        }
+
+        button {
+            padding: 10px;
+            border: none;
+            background-color: #ffcc00;
+            color: #000;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #ffbb00;
+        }
+
+        .steps {
+            margin-top: 20px;
+        }
+
+        .steps div {
+            margin-bottom: 10px;
+        }
+
+        .formula {
+            font-family: monospace; /* Use monospace for better alignment */
+        }
+
+        .fraction {
+            display: inline-block;
+            text-align: center;
+        }
+
+        .fraction .numerator {
+            border-bottom: 1px solid #ffffff;
+            padding-bottom: 2px;
+            margin-bottom: 2px;
+        }
+
+        .fraction .denominator {
+            padding-top: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>GROUP-2</h1>
+        <h2>Correlation Coefficient Calculator</h2>
+        <div class="input-section">
+            <label for="xValues">X Values (comma-separated):</label>
+            <input type="text" id="xValues" placeholder="e.g. 2,3,4,5">
+            <label for="yValues">Y Values (comma-separated):</label>
+            <input type="text" id="yValues" placeholder="e.g. 3,5,2,8">
+            <button onclick="calculateCorrelation()">Calculate</button>
+        </div>
+        <div id="steps" class="steps">
+            <div id="formula" class="formula"></div>
+            <div id="substitutedValues"></div>
+            <div id="result"></div>
+        </div>
+    </div>
+    <script>
+        function calculateCorrelation() {
+            const xValues = document.getElementById('xValues').value.split(',').map(Number);
+            const yValues = document.getElementById('yValues').value.split(',').map(Number);
+            const n = xValues.length;
+
+            if (yValues.length !== n) {
+                document.getElementById('result').innerHTML = 'Error: X and Y must have the same number of values.';
+                return;
+            }
+
+            const meanX = xValues.reduce((a, b) => a + b, 0) / n;
+            const meanY = yValues.reduce((a, b) => a + b, 0) / n;
+
+            const covariance = xValues.reduce((sum, xi, i) => sum + ((xi - meanX) * (yValues[i] - meanY)), 0) / n;
+            const sumSqX = xValues.reduce((sum, xi) => sum + Math.pow(xi - meanX, 2), 0);
+            const sumSqY = yValues.reduce((sum, yi) => sum + Math.pow(yi - meanY, 2), 0);
+
+            const stdDevX = Math.sqrt(sumSqX / n);
+            const stdDevY = Math.sqrt(sumSqY / n);
+
+            const correlation = covariance / (stdDevX * stdDevY);
+
+            document.getElementById('formula').innerHTML = `
+                <strong>Step 1: Formula</strong><br>
+                r = 
+                <div class="fraction">
+                    <div class="numerator">
+                        Σ(x<sub>i</sub> - μ<sub>X</sub>)(y<sub>i</sub> - μ<sub>Y</sub>)
+                    </div>
+                    <div class="denominator">
+                        √(Σ(x<sub>i</sub> - μ<sub>X</sub>)² * Σ(y<sub>i</sub> - μ<sub>Y</sub>)²)
+                    </div>
+                </div>
+            `;
+            document.getElementById('substitutedValues').innerHTML = `
+                <strong>Step 2: Substituted Values</strong><br>
+                Cov(X, Y) = ${covariance.toFixed(4)}<br>
+                σ<sub>X</sub>² = ( Σ(x<sub>i</sub> - μ<sub>X</sub>)² ) / n = ${sumSqX.toFixed(4)} / ${n} = ${stdDevX.toFixed(4)}²<br>
+                σ<sub>Y</sub>² = ( Σ(y<sub>i</sub> - μ<sub>Y</sub>)² ) / n = ${sumSqY.toFixed(4)} / ${n} = ${stdDevY.toFixed(4)}²
+            `;
+            document.getElementById('result').innerHTML = `<strong>Result</strong><br>  Correlation Coefficient (r) = ${correlation.toFixed(4)}`;
+        }
+    </script>
+</body>
+</html>
